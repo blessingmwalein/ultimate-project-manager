@@ -22,6 +22,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'position',
+        'account_type',
+        'avatar_url',
+        'phone',
     ];
 
     /**
@@ -45,5 +49,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function companies()
+    {
+        return $this->belongsToMany(\App\Models\Company::class, 'company_user')->withTimestamps()->withPivot('role');
+    }
+
+    public function plans()
+    {
+        return $this->hasMany(UserPlan::class);
+    }
+
+    public function activePlan(): ?UserPlan
+    {
+        return $this->plans()->where('status', 'active')->latest('id')->first();
     }
 }

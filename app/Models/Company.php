@@ -33,4 +33,12 @@ class Company extends Model
 	{
 		return $this->plans()->where('status', 'active')->latest('id')->first();
 	}
+
+	// Relationship form for eager-loading the active plan with its plan details
+	public function activePlanOne()
+	{
+		return $this->hasOne(CompanyPlan::class)
+			->where('status', 'active')
+			->latestOfMany('id');
+	}
 }

@@ -10,7 +10,12 @@ use App\Support\ApiResponse;
 
 class ProjectController extends Controller
 {
-	public function __construct(private readonly ProjectRepositoryInterface $projects) {}
+	public function __construct(private readonly ProjectRepositoryInterface $projects)
+	{
+		$this->middleware(['auth:sanctum']);
+		// Use class-based middleware reference to avoid alias lookup issues
+		$this->middleware(\App\Http\Middleware\CheckPlanLimits::class . ':projects')->only('store');
+	}
 
 	public function index(int $companyId)
 	{

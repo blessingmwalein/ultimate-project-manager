@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateTaskRequest extends FormRequest
 {
@@ -11,8 +12,20 @@ class UpdateTaskRequest extends FormRequest
 	public function rules(): array
 	{
 		return [
-			'task_list_id' => ['sometimes','nullable','integer','exists:task_lists,id'],
-			'parent_task_id' => ['sometimes','nullable','integer','exists:tasks,id'],
+			'task_list_id' => [
+				'sometimes','nullable','integer',
+				Rule::exists('task_lists','id')->where(function ($query) {
+					$query->where('project_id', $this->route('projectId'))
+						->where('company_id', $this->route('companyId'));
+				}),
+			],
+			'parent_task_id' => [
+				'sometimes','nullable','integer',
+				Rule::exists('tasks','id')->where(function ($query) {
+					$query->where('project_id', $this->route('projectId'))
+						->where('company_id', $this->route('companyId'));
+				}),
+			],
 			'title' => ['sometimes','required','string','max:255'],
 			'description' => ['nullable','string'],
 			'status' => ['in:todo,in_progress,blocked,done'],

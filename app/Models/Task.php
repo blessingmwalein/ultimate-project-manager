@@ -11,12 +11,13 @@ class Task extends Model
 	use HasFactory, SoftDeletes;
 
 	protected $fillable = [
-		'company_id','project_id','task_list_id','parent_task_id','title','description','status','priority','start_date','due_date','assignee_id','progress_pct','estimate_hours','actual_hours'
+		'company_id','project_id','task_list_id','parent_task_id','title','description','status','priority','start_date','due_date','assignee_id','progress_pct','estimate_hours','actual_hours','order_index'
 	];
 
 	protected $casts = [
 		'start_date' => 'date',
 		'due_date' => 'date',
+		'order_index' => 'integer',
 	];
 
 	public function company() { return $this->belongsTo(Company::class); }

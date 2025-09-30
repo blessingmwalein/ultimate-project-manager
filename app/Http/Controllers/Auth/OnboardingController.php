@@ -8,22 +8,25 @@ use App\Http\Requests\Onboarding\LoginRequest;
 use App\Http\Requests\Onboarding\CompleteProfileRequest;
 use App\Http\Requests\Onboarding\CreateCompanyRequest;
 use App\Http\Requests\Onboarding\SelectPlanRequest;
+use App\Http\Requests\Onboarding\SelectUserPlanRequest;
 use App\Models\Company;
 use App\Models\Plan;
 use App\Repositories\Contracts\CompanyPlanRepositoryInterface;
 use App\Repositories\Contracts\CompanyRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Contracts\UserPlanRepositoryInterface;
 use App\Support\ApiResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class OnboardingController extends Controller
 {
-	public function __construct(
-		private readonly UserRepositoryInterface $users,
-		private readonly CompanyPlanRepositoryInterface $companyPlans,
-		private readonly CompanyRepositoryInterface $companies,
-	) {}
+    public function __construct(
+        private readonly UserRepositoryInterface $users,
+        private readonly CompanyPlanRepositoryInterface $companyPlans,
+        private readonly CompanyRepositoryInterface $companies,
+        private readonly UserPlanRepositoryInterface $userPlans,
+    ) {}
 
 	public function register(RegisterUserRequest $request)
 	{
@@ -65,4 +68,12 @@ class OnboardingController extends Controller
 			return ApiResponse::success(['company_id' => $company->id, 'active_subscription' => $subscription, 'plan' => $plan]);
 		});
 	}
+
+    public function selectUserPlan(SelectUserPlanRequest $request)
+    {
+        $user = $request->user();
+        $plan = \App\Models\Plan::where('code', $request->validated()['plan_code'])->firstOrFail();
+        $this->userPlans->activatePlan($user, $plan);
+        return ApiResponse::success(['plan' => $user->activePlan()?->load('plan')]);
+    }
 }

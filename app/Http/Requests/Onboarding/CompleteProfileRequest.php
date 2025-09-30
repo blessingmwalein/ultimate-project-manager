@@ -12,6 +12,8 @@ class CompleteProfileRequest extends FormRequest
 	{
 		return [
 			'name' => ['sometimes','required','string','max:255'],
+			'position' => ['nullable','string','max:255'],
+			'account_type' => ['nullable','in:individual,company'],
 			'phone' => ['nullable','string','max:50'],
 			'avatar_url' => ['nullable','url'],
 		];

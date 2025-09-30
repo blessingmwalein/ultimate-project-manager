@@ -12,4 +12,5 @@ interface TaskRepositoryInterface
 	public function findInProject(int $companyId, int $projectId, int $id): ?Task;
 	public function updateInProject(int $companyId, int $projectId, int $id, array $attributes): Task;
 	public function deleteInProject(int $companyId, int $projectId, int $id): void;
+	public function moveInProject(int $companyId, int $projectId, int $id, int $toTaskListId, ?int $orderIndex = null): Task;
 }
