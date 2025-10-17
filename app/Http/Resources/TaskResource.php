@@ -20,6 +20,7 @@ class TaskResource extends JsonResource
 			'start_date' => $this->start_date,
 			'due_date' => $this->due_date,
 			'assignee_id' => $this->assignee_id,
+			'assignee' => $this->whenLoaded('assignee'),
 			'progress_pct' => $this->progress_pct,
 			'estimate_hours' => $this->estimate_hours,
 			'actual_hours' => $this->actual_hours,

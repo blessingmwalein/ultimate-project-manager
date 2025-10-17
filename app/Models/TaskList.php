@@ -13,4 +13,7 @@ class TaskList extends Model
 
 	public function project() { return $this->belongsTo(Project::class); }
 	public function company() { return $this->belongsTo(Company::class); }
+
+	//add task task relations
+	public function tasks() { return $this->hasMany(Task::class); }
 }

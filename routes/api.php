@@ -7,6 +7,7 @@ use App\Http\Controllers\Landlord\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Landlord\Companies\CompanyController;
 use App\Http\Controllers\Landlord\Plans\PlanController;
 use App\Http\Controllers\Auth\OnboardingController;
+use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\Projects\ProjectController as CompanyProjectController;
 use App\Http\Controllers\Tasks\TaskController as CompanyTaskController;
 use App\Http\Controllers\Projects\TaskListController as CompanyTaskListController;
@@ -31,7 +32,16 @@ Route::prefix('api/v1')->group(function () {
 	// Onboarding (single-db now)
 	Route::post('/auth/register-user', [OnboardingController::class, 'register']);
 	Route::post('/auth/login-user', [OnboardingController::class, 'login']);
+	
+	// Social login routes
+	Route::get('/auth/google/redirect', [SocialLoginController::class, 'redirectToGoogle']);
+	Route::match(['get', 'post'], '/auth/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
+	Route::get('/auth/facebook/redirect', [SocialLoginController::class, 'redirectToFacebook']);
+	Route::match(['get', 'post'], '/auth/facebook/callback', [SocialLoginController::class, 'handleFacebookCallback']);
+	
 	Route::middleware('auth:sanctum')->group(function () {
+		// Complete social onboarding
+		Route::post('/auth/complete-social-onboarding', [SocialLoginController::class, 'completeSocialOnboarding']);
 		Route::post('/auth/complete-profile', [OnboardingController::class, 'completeProfile']);
 		Route::post('/companies', [OnboardingController::class, 'createCompany']);
 		Route::post('/companies/{companyId}/select-plan', [OnboardingController::class, 'selectPlan']);
@@ -104,8 +114,10 @@ Route::prefix('api/v1')->group(function () {
 		Route::put('/companies/{companyId}/projects/{projectId}/task-lists/{id}', [CompanyTaskListController::class, 'update']);
 		Route::delete('/companies/{companyId}/projects/{projectId}/task-lists/{id}', [CompanyTaskListController::class, 'destroy']);
 
-		// Project tasks
+		// Get all tasks filtered by task_list_id
 		Route::get('/companies/{companyId}/projects/{projectId}/tasks', [CompanyTaskController::class, 'index']);
+		
+		// Project tasks
 		Route::post('/companies/{companyId}/projects/{projectId}/tasks', [CompanyTaskController::class, 'store']);
 		Route::get('/companies/{companyId}/projects/{projectId}/tasks/{id}', [CompanyTaskController::class, 'show']);
 		Route::put('/companies/{companyId}/projects/{projectId}/tasks/{id}', [CompanyTaskController::class, 'update']);

@@ -8,6 +8,7 @@ use App\Http\Requests\User\ChangePasswordRequest;
 use App\Support\ApiResponse;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request;
 
 class UserProfileController extends Controller
 {
@@ -16,15 +17,21 @@ class UserProfileController extends Controller
         $this->middleware('auth:sanctum');
     }
 
-    public function show()
+    public function show(Request $request)
     {
-        $user = auth()->user();
-        $userPlan = $user->activePlan()?->load('plan');
-        return ApiResponse::success([
-            'user' => $user,
-            'plan' => $userPlan,
+        $user = $request->user()->load(['companies.activePlanOne.plan']);
+        
+        // Get only the first company with its plan
+        $user->company = $user->companies->first();
+        unset($user->companies);
+        
+        return response()->json([
+            'user' => $user
         ]);
-    }
+
+        
+
+    } 
 
     public function update(UpdateProfileRequest $request)
     {

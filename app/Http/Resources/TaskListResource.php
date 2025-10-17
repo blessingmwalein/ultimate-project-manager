@@ -13,6 +13,7 @@ class TaskListResource extends JsonResource
 			'project_id' => $this->project_id,
 			'name' => $this->name,
 			'order_index' => $this->order_index,
+			'tasks' => TaskResource::collection($this->tasks),
 			'created_at' => $this->created_at,
 			'updated_at' => $this->updated_at,
 		];

@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->belongsToMany(\App\Models\Company::class, 'company_user')->withTimestamps()->withPivot('role');
     }
 
+    public function ownedCompanies()
+    {
+        return $this->hasMany(\App\Models\Company::class, 'owner_user_id');
+    }
+
     public function plans()
     {
         return $this->hasMany(UserPlan::class);
