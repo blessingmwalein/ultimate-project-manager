@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./vendor/laravel/sail/runtimes/8.4/Dockerfile
+      args:
+        WWWGROUP: '${WWWGROUP:-1000}'
+    image: ultimate-project-manager-laravel
+    container_name: ultimate-project-manager-app
+    ports:
+      - "80:80"
+    environment:
+      APP_ENV: production
+      WWWUSER: '${WWWUSER:-1000}'
+      LARAVEL_SAIL: 1
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - upm-net
+
+  mysql:
+    image: mysql/mysql-server:8.0
+    container_name: ultimate-project-manager-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: ultimate_project_manager_db
+      MYSQL_USER: upm_user
+      MYSQL_PASSWORD: StrongPassword123
+    volumes:
+      - upm-mysql-data:/var/lib/mysql
+    networks:
+      - upm-net
+
+  redis:
+    image: redis:alpine
+    container_name: ultimate-project-manager-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - upm-net
+
+networks:
+  upm-net:
+    driver: bridge
+
+volumes:
+  upm-mysql-data:
+    driver: local
